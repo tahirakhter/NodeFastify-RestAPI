@@ -1,19 +1,6 @@
 const User = require('../model/User');
 const bcrypt = require('bcrypt');
-const nodemailer = require('nodemailer');
-
-//configure email to send
-var transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-        user: 'test@gmail.com',
-        pass: 'testPass'
-    }, tls: {
-        rejectUnauthorized: false
-    }
-});
+const emailService = require('./email.service');
 
 module.exports.signUp = (data) => {
     var user = new User(data);
@@ -41,28 +28,21 @@ module.exports.signUp = (data) => {
 
 module.exports.resetPassword = (data) => {
     return new Promise((resolve, reject) => {
-        User.findOne({'email': data.email}, (err, user) => {
+        User.findOne({'email': data.email}, async (err, user) => {
             if (err) {
                 reject(new Error('failed to resendPassword'));
             } else {
-                const mailOptions = {
-                    from: 'test@gmail.com', // sender email
-                    to: user.email, // receiver email
-                    subject: 'New Password Change Request',
-                    html: '<a href="">Click to Change your password</a>'
-                };
-
-                //sending email
-                transporter.sendMail(mailOptions, (err, info) => {
-                    if (err) {
-                        console.log(err);
-                        reject(new Error('failed to send email!'));
-                    }
-                    else {
-                        console.log(info);
-                        resolve({message: 'user password change request emailed successfully!'});
-                    }
-                });
+                try {
+                    //send email to requester
+                    let response = await  emailService.sendEmail({
+                        to: user.email,
+                        subject: 'Password Reset Request',
+                        type: 'RESET_PASSWORD'
+                    });
+                    return response;
+                } catch (e) {
+                    reject(new Error('failed to send email!'));
+                }
             }
         })
     })

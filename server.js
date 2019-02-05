@@ -1,8 +1,9 @@
 const routes = require('./app/routes');
 const mongoose = require('mongoose');
+require('dotenv').config();
 
 // Connect to DB
-mongoose.connect('mongodb://localhost/todoApi').then(() => {
+mongoose.connect(process.env.DB_URL).then(() => {
     console.log("MongoDB connected…")
 }).catch((err) => {
     console.log(err)
@@ -25,7 +26,7 @@ routes.forEach((route, index) => {
 // Run the server!
 const start = async () => {
     try {
-        await fastify.listen(3000);
+        await fastify.listen(process.env.PORT);
         fastify.log.info('listening on ${fastify.server.address().port}');
     } catch (err) {
         fastify.log.error(err);

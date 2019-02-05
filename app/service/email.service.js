@@ -6,37 +6,35 @@ const emailContent = {
 
 //configure email to send
 var transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
+    host: process.env.EMAIL_SERVER,
+    port: process.env.EMAIL_PORT,
     secure: true,
     auth: {
-        user: 'test@gmail.com',
-        pass: 'testPass'
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }, tls: {
         rejectUnauthorized: false
     }
 });
-
-module.exports = {
-    sendEmail: function (data) {
-        if (data) {
+module.exports.sendEmail = async (data) => {
+    if (data) {
+        return new Promise((resolve, reject) => {
             const mailOptions = {
-                from: 'test@gmail.com', // sender email
+                from: process.env.EMAIL_USER, // sender email
                 to: data.to, // receiver email
                 subject: data.subject,
                 html: emailContent[data.type]
             }
+
             //sending email
             transporter.sendMail(mailOptions, (err, info) => {
                 if (err) {
-                    console.log(err);
-                    return 'failed to send email!';
+                    reject(new Error('failed to send email!'));
                 }
                 else {
-                    console.log(info);
-                    return 'user password change request emailed successfully!';
+                    resolve({message: 'email has been sent successfully!'});
                 }
             });
-        }
+        })
     }
 }

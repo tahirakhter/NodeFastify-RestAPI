@@ -1,6 +1,7 @@
 // Import our Controllers
 const {signUp, changePassword, resetPassword} = require('../controller/user.controller');
 const {authenticateUser, getUserSession, logout, logoutAllDevices} = require('../controller/auth.controller');
+const {addTodo, updateTodo, deleteTodo, getAllTodoList, getTodoListByUserId} = require('../controller/todo.controller');
 
 module.exports = routes = [
     {
@@ -37,5 +38,30 @@ module.exports = routes = [
         method: 'POST',
         url: '/api/user/resetPassword',
         handler: resetPassword
+    },
+    {
+        method: 'POST',
+        url: '/api/todo',
+        handler: addTodo
+    },
+    {
+        method: 'PUT',
+        url: '/api/todo/:id',
+        handler: updateTodo
+    },
+    {
+        method: 'DELETE',
+        url: '/api/todo/:id',
+        handler: deleteTodo
+    },
+    {
+        method:'GET',
+        url:'/api/todo',
+        handler:getAllTodoList
+    },
+    {
+        method:'GET',
+        url:'/api/todo/:id',
+        handler:getTodoListByUserId
     }
 ]
