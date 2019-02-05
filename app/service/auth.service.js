@@ -60,7 +60,7 @@ module.exports.authenticateUser = (data) => {
 
                     //generate new token
                     let token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {
-                        expiresIn: process.env.TOKEN_EXPIRE_TIME // expires in 1 hour
+                        expiresIn: 3600 // expires in 1 hour
                     });
 
                     //check if user already have active token
