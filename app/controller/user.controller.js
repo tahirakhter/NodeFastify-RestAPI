@@ -1,17 +1,17 @@
 const boom = require('boom');
-const {signUp} = require('../service/userService');
+const {signUp, resetPassword, changePassword} = require('../service/user.service');
 
-module.exports.signUp = async (req, res) => {
+module.exports.signUp = async (req, reply) => {
     try {
         let response = await signUp(req.body);
-       return response;
+        return response;
     } catch (e) {
         throw boom.boomify(e);
     }
 }
 
 
-module.exports.resetPassword = async (req, res) => {
+module.exports.resetPassword = async (req, reply) => {
     try {
         let response = await resetPassword(req.body);
         return response;
@@ -20,7 +20,7 @@ module.exports.resetPassword = async (req, res) => {
     }
 }
 
-module.exports.changePassword = async (req, res) => {
+module.exports.changePassword = async (req, reply) => {
     try {
         let response = await changePassword(req.body);
         return response;

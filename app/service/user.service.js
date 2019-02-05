@@ -18,9 +18,9 @@ var transporter = nodemailer.createTransport({
 module.exports.signUp = (data) => {
     var user = new User(data);
     //password encryption
-    user.password = bcrypt.hashSync(user.password, 10, function (err, hash) {
+    user.password = bcrypt.hashSync(user.password, 10, (err, hash) => {
         if (err) {
-            return 'password encryption failed';
+            return {message: 'password encryption failed'};
         } else {
             hash;
         }
@@ -37,34 +37,32 @@ module.exports.signUp = (data) => {
             }
         });
     })
-
 }
 
 module.exports.resetPassword = (data) => {
     return new Promise((resolve, reject) => {
-        User.findOne({'email': data.email}).then((response) => {
-            if (response) {
+        User.findOne({'email': data.email}, (err, user) => {
+            if (err) {
+                reject(new Error('failed to resendPassword'));
+            } else {
                 const mailOptions = {
                     from: 'test@gmail.com', // sender email
-                    to: response.email, // receiver email
+                    to: user.email, // receiver email
                     subject: 'New Password Change Request',
                     html: '<a href="">Click to Change your password</a>'
                 };
 
                 //sending email
-                transporter.sendMail(mailOptions, function (err, info) {
+                transporter.sendMail(mailOptions, (err, info) => {
                     if (err) {
                         console.log(err);
-                        //resolve(new Error('failed to send email!'));
                         reject(new Error('failed to send email!'));
                     }
                     else {
                         console.log(info);
-                        resolve('user password change request emailed successfully!');
+                        resolve({message: 'user password change request emailed successfully!'});
                     }
                 });
-            } else {
-                reject(new Error('failed to resendPassword'));
             }
         })
     })
@@ -72,7 +70,7 @@ module.exports.resetPassword = (data) => {
 
 module.exports.changePassword = (data) => {
     return new Promise((resolve, reject) => {
-        User.findOne({'_id': data.userId}, (err, user) => {
+        User.findOne({'_id': data.id}, (err, user) => {
             if (err) {
                 reject(new Error('failed to changePassword'));
             } else {
@@ -82,7 +80,7 @@ module.exports.changePassword = (data) => {
                     if (err) {
                         resolve(new Error('failed to changePassword'));
                     } else {
-                        resolve('password changed successfully!');
+                        resolve({message: 'password changed successfully!'});
                     }
                 });
             }
